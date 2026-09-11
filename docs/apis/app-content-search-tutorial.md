@@ -38,14 +38,9 @@ Specifically, you will learn how to use the [AppContentIndexer](/windows/windows
 
 ## Prerequisites
 
-To learn about the Windows AI API hardware requirements
-and how to configure your device to successfully build
-apps using the Windows AI APIs, see
-[Get started building an app with Windows AI APIs](/windows/ai/apis/get-started).
+To learn about the Windows AI API hardware requirements and how to configure your device to successfully build apps using the Windows AI APIs, see [Get started building an app with Windows AI APIs](/windows/ai/apis/get-started).
 
-The code samples in this tutorial require **Windows App
-SDK 2.0.0-preview1** or later. Make sure your project
-references the correct NuGet package version.
+The code samples in this tutorial require **Windows App SDK 2.0.0-preview1** or later. Make sure your project references the correct NuGet package version.
 
 ### Package Identity Requirement
 
@@ -55,20 +50,10 @@ Apps using **AppContentIndexer** must have package identity, which is only avail
 
 To create a semantic index of the content in your app, you must first establish a searchable structure that your app can use to store and retrieve content efficiently. This index acts as a local semantic and lexical search engine for your app's content.
 
-To use the **AppContentIndexer** API, first call
-`GetOrCreateIndex` with a specified index name. If an
-index with that name already exists for the current app
-identity and user, it is opened; otherwise, a new one
-is created.
+To use the **AppContentIndexer** API, first call `GetOrCreateIndex` with a specified index name. If an index with that name already exists for the current app identity and user, it is opened; otherwise, a new one is created.
 
 > [!TIP]
-> When configuring index capabilities, be aware of
-> [coupling rules](#capability-coupling-rules).
-> `TextSemantic` requires `TextLexical` - attempting to
-> suppress `TextLexical` while `TextSemantic` is active
-> causes the suppression to be silently ignored.
-> `ImageOcr` and `ImageSemantic` are independent and
-> do not affect each other.
+> When configuring index capabilities, be aware of [coupling rules](#capability-coupling-rules). `TextSemantic` requires `TextLexical` - attempting to suppress `TextLexical` while `TextSemantic` is active causes the suppression to be silently ignored. `ImageOcr` and `ImageSemantic` are independent and do not affect each other.
 
 ```csharp
 public void SimpleGetOrCreateIndexSample()
@@ -111,55 +96,22 @@ private AppContentIndexer GetIndexerForApp()
 
 ## Capability coupling rules
 
-When creating an index with `GetOrCreateIndex`, you can
-configure which indexing capabilities are active by
-setting `IndexCapabilityRequirement` values on
-`GetOrCreateIndexOptions`. Some capabilities have
-dependency relationships, and the API handles these
-through **coupling rules**.
+When creating an index with `GetOrCreateIndex`, you can configure which indexing capabilities are active by setting `IndexCapabilityRequirement` values on `GetOrCreateIndexOptions`. Some capabilities have dependency relationships, and the API handles these through **coupling rules**.
 
 ### Text capabilities
 
-- **`TextSemantic` requires `TextLexical`.**
-  Semantic text indexing depends on the lexical
-  pipeline. If you set
-  `TextLexicalRequirement = Suppressed` but
-  `TextSemanticRequirement` is `Default` or `Required`,
-  the system silently treats `TextLexicalRequirement`
-  as `Default`, because semantic text indexing requires
-  lexical indexing to be enabled.
-- `TextLexicalRequirement = Suppressed` is only
-  honored when `TextSemanticRequirement` is also
-  `Suppressed`.
-- When both `TextLexicalRequirement` and
-  `TextSemanticRequirement` are `Suppressed`, text
-  content is not supported and any text regions added
-  will have a region error detail of
-  `UnsupportedContentKind`.
+- **`TextSemantic` requires `TextLexical`.** Semantic text indexing depends on the lexical pipeline. If you set `TextLexicalRequirement = Suppressed` but `TextSemanticRequirement` is `Default` or `Required`, the system silently treats `TextLexicalRequirement` as `Default`, because semantic text indexing requires lexical indexing to be enabled.
+- `TextLexicalRequirement = Suppressed` is only honored when `TextSemanticRequirement` is also `Suppressed`.
+- When both `TextLexicalRequirement` and `TextSemanticRequirement` are `Suppressed`, text content is not supported and any text regions added will have a region error detail of `UnsupportedContentKind`.
 
 ### Image capabilities
 
-- **`ImageOcr` and `ImageSemantic` are independent
-  capabilities.** Suppressing
-  `ImageSemanticRequirement` does not affect OCR, and
-  suppressing `ImageOcrRequirement` does not affect
-  semantic image indexing.
-- When both `ImageOcrRequirement` and
-  `ImageSemanticRequirement` are `Suppressed`, image
-  content is not supported and any image regions added
-  will have a region error detail of
-  `UnsupportedContentKind`.
-- If `ImageOcrRequirement = Required`, lexical
-  indexing will be used for extracted OCR text, even if
-  `TextLexicalRequirement = Suppressed` for text
-  content.
+- **`ImageOcr` and `ImageSemantic` are independent capabilities.** Suppressing `ImageSemanticRequirement` does not affect OCR, and suppressing `ImageOcrRequirement` does not affect semantic image indexing.
+- When both `ImageOcrRequirement` and `ImageSemanticRequirement` are `Suppressed`, image content is not supported and any image regions added will have a region error detail of `UnsupportedContentKind`.
+- If `ImageOcrRequirement = Required`, lexical indexing will be used for extracted OCR text, even if `TextLexicalRequirement = Suppressed` for text content.
 
 > [!NOTE]
-> `GetOrCreateIndex` may return a
-> `GetOrCreateIndexStatus.InvalidOptions` status when
-> the specified options are invalid. Check the
-> `ExtendedError` property on the result for details,
-> adjust your options, and retry.
+> `GetOrCreateIndex` may return a `GetOrCreateIndexStatus.InvalidOptions` status when the specified options are invalid. Check the `ExtendedError` property on the result for details, adjust your options, and retry.
 
 ## Add text strings to the index and then run a query
 
@@ -217,7 +169,7 @@ This sample demonstrates how to add some text strings to the index created for y
     }
 ```
 
-`QueryMatch` includes only `ContentId` and `TextOffset`/`TextLength`, not the matching text itself. It is your responsibility as the app developer to reference the original text.For OCR query matches from indexed images, use AppManagedOcrTextQueryMatch.Fragment and AppManagedOcrTextQueryMatch.Subregion instead of text offsets. Query results are sorted by relevancy, with the top result being most relevant. Indexing occurs asynchronously, so queries may run on partial data. You can check the indexing status as outlined below.
+`QueryMatch` includes only `ContentId` and `TextOffset`/`TextLength`, not the matching text itself. It is your responsibility as the app developer to reference the original text. For OCR query matches from indexed images, use `AppManagedOcrTextQueryMatch.Fragment` and `AppManagedOcrTextQueryMatch.Subregion` instead of text offsets. Query results are sorted by relevancy, with the top result being most relevant. Indexing occurs asynchronously, so queries may run on partial data. You can check the indexing status as outlined below.
 
 ## Manage long text string complexity
 
