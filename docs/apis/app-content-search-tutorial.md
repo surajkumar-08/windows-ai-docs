@@ -132,7 +132,7 @@ This sample demonstrates how to add some text strings to the index created for y
     }
 ```
 
-`QueryMatch` includes only `ContentId` and `TextOffset`/`TextLength`, not the matching text itself. It is your responsibility as the app developer to reference the original text. Query results are sorted by relevancy, with the top result being most relevant. Indexing occurs asynchronously, so queries may run on partial data. You can check the indexing status as outlined below.
+`TextQueryMatch` results include `ContentId`, but not the matching text itself. For app-managed text results, cast the match to `AppManagedTextQueryMatch` to access `TextOffset` and `TextLength`, then use those values to reference the matching substring in the original text. Query results are sorted by relevancy, with the top result being most relevant. Indexing occurs asynchronously, so queries may run on partial data. You can check the indexing status as outlined below.
 
 ## Refine search results with query options
 
