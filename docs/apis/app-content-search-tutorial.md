@@ -145,7 +145,7 @@ Pass `TextQueryOptions` (or `ImageQueryOptions`) to control how matches are prod
 ```csharp
 public void TextQueryWithOptionsSample()
 {
-        using AppContentIndexer indexer = GetIndexerForApp();
+    using AppContentIndexer indexer = GetIndexerForApp();
     var options = new TextQueryOptions();
     options.MatchScope = QueryMatchScope.ContentItem;   // at most one match per item
     options.TextMatchType = TextLexicalMatchType.Exact; // exact lexical matching
