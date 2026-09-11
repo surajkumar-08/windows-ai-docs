@@ -99,7 +99,7 @@ This sample demonstrates how to add some text strings to the index created for y
 
     public void SimpleTextIndexingSample()
     {
-    using AppContentIndexer indexer = GetIndexerForApp();
+        using AppContentIndexer indexer = GetIndexerForApp();
         // Add some text data to the index:
         foreach (var item in simpleTextData)
         {
@@ -145,7 +145,7 @@ Pass `TextQueryOptions` (or `ImageQueryOptions`) to control how matches are prod
 ```csharp
 public void TextQueryWithOptionsSample()
 {
-    using AppContentIndexer indexer = GetIndexerForApp();
+        using AppContentIndexer indexer = GetIndexerForApp();
     var options = new TextQueryOptions();
     options.MatchScope = QueryMatchScope.ContentItem;   // at most one match per item
     options.TextMatchType = TextLexicalMatchType.Exact; // exact lexical matching
@@ -171,7 +171,7 @@ The sample demonstrates that it is not necessary for the app developer to divide
     };
     public void TextIndexingSample2()
     {
-    using AppContentIndexer indexer = GetIndexerForApp();
+        using AppContentIndexer indexer = GetIndexerForApp();
         var folderPath = Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
         // Add some text data to the index:
         foreach (var item in textFiles)
@@ -189,7 +189,7 @@ The sample demonstrates that it is not necessary for the app developer to divide
 
     public void TextIndexingSample2_RunQuery()
     {
-    using AppContentIndexer indexer = GetIndexerForApp();
+        using AppContentIndexer indexer = GetIndexerForApp();
         var folderPath = Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
         // Search the index
         AppIndexTextQuery query = indexer.CreateTextQuery("Facts about kittens.");
@@ -234,7 +234,7 @@ This sample demonstrates how to index image data as `SoftwareBitmaps` and then s
         };
     public void SimpleImageIndexingSample()
     {
-    using AppContentIndexer indexer = GetIndexerForApp();
+        using AppContentIndexer indexer = GetIndexerForApp();
 
         // Add some image data to the index.
         foreach (var item in imageFilesToIndex)
@@ -247,7 +247,7 @@ This sample demonstrates how to index image data as `SoftwareBitmaps` and then s
     }
     public void SimpleImageIndexingSample_RunQuery()
     {
-    using AppContentIndexer indexer = GetIndexerForApp();
+        using AppContentIndexer indexer = GetIndexerForApp();
         // We query the index for some data to match our text query.
         AppIndexImageQuery query = indexer.CreateImageQuery("cute pictures of kittens");
         IReadOnlyList<ImageQueryMatch> imageMatches = query.GetNextMatches(5);
@@ -280,7 +280,7 @@ To enable RAG scenarios with the **AppContentIndexer** API, you can follow this 
 ```csharp
     public void SimpleRAGScenario()
     {
-    using AppContentIndexer indexer = GetIndexerForApp();
+        using AppContentIndexer indexer = GetIndexerForApp();
         // These are some text files that had previously been added to the index.
         // The key is the contentId of the item.
         Dictionary<string, string> data = new Dictionary<string, string>
