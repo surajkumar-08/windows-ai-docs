@@ -56,24 +56,24 @@ To use the **AppContentIndexer** API, first call `GetOrCreateIndex` with a speci
 > When configuring index capabilities, be aware of [coupling rules](#capability-coupling-rules). `TextSemantic` requires `TextLexical` - attempting to suppress `TextLexical` while `TextSemantic` is active causes the suppression to be silently ignored. `ImageOcr` and `ImageSemantic` are independent and do not affect each other.
 
 ```csharp
-public void SimpleGetOrCreateIndexSample()
+public void SimpleGetOrCreateIndexSample()
 {
-    GetOrCreateIndexResult result = AppContentIndexer.GetOrCreateIndex("myindex");
-    if (!result.Succeeded)
-    {
-        throw new InvalidOperationException($"Failed to open index. Status = '{result.Status}', Error = '{result.ExtendedError}'");
-    }
-    // If result.Succeeded is true, result.Status will either be CreatedNew or OpenedExisting
-    if (result.Status == GetOrCreateIndexStatus.CreatedNew)
-    {
-        Console.WriteLine("Created a new index");
-    }
-    else if(result.Status == GetOrCreateIndexStatus.OpenedExisting)
-    {
-        Console.WriteLine("Opened an existing index");
-    }
-    using AppContentIndexer indexer = result.Indexer;
-    // Use indexer...
+    GetOrCreateIndexResult result = AppContentIndexer.GetOrCreateIndex("myindex");
+    if (!result.Succeeded)
+    {
+        throw new InvalidOperationException($"Failed to open index. Status = '{result.Status}', Error = '{result.ExtendedError}'");
+    }
+    // If result.Succeeded is true, result.Status will either be CreatedNew or OpenedExisting
+    if (result.Status == GetOrCreateIndexStatus.CreatedNew)
+    {
+        Console.WriteLine("Created a new index");
+    }
+    else if(result.Status == GetOrCreateIndexStatus.OpenedExisting)
+    {
+        Console.WriteLine("Opened an existing index");
+    }
+    using AppContentIndexer indexer = result.Indexer;
+    // Use indexer...
 }
 ```
 
@@ -121,23 +121,23 @@ This sample demonstrates how to add some text strings to the index created for y
     // This is some text data that we want to add to the index:
     Dictionary<string, string> simpleTextData = new Dictionary<string, string>
     {
-        {"item1", "Here is some information about Cats: Cats are cute and fluffy. Young cats are very playful." },
-        {"item2", "Dogs are loyal and affectionate animals known for their companionship, intelligence, and diverse breeds." },
-        {"item3", "Fish are aquatic creatures that breathe through gills and come in a vast variety of shapes, sizes, and colors." },
-        {"item4", "Broccoli is a nutritious green vegetable rich in vitamins, fiber, and antioxidants." },
-        {"item5", "Computers are powerful electronic devices that process information, perform calculations, and enable communication worldwide." },
-        {"item6", "Music is a universal language that expresses emotions, tells stories, and connects people through rhythm and melody." },
+        {"item1", "Here is some information about Cats: Cats are cute and fluffy. Young cats are very playful." },
+        {"item2", "Dogs are loyal and affectionate animals known for their companionship, intelligence, and diverse breeds." },
+        {"item3", "Fish are aquatic creatures that breathe through gills and come in a vast variety of shapes, sizes, and colors." },
+        {"item4", "Broccoli is a nutritious green vegetable rich in vitamins, fiber, and antioxidants." },
+        {"item5", "Computers are powerful electronic devices that process information, perform calculations, and enable communication worldwide." },
+        {"item6", "Music is a universal language that expresses emotions, tells stories, and connects people through rhythm and melody." },
     };
 
     public void SimpleTextIndexingSample()
     {
-        AppContentIndexer indexer = GetIndexerForApp();
-        // Add some text data to the index:
-        foreach (var item in simpleTextData)
-        {
-            IndexableAppContent textContent = AppManagedIndexableAppContent.CreateFromString(item.Key, item.Value);
-            indexer.AddOrUpdate(textContent);
-        }
+        AppContentIndexer indexer = GetIndexerForApp();
+        // Add some text data to the index:
+        foreach (var item in simpleTextData)
+        {
+            IndexableAppContent textContent = AppManagedIndexableAppContent.CreateFromString(item.Key, item.Value);
+            indexer.AddOrUpdate(textContent);
+        }
     }
 
     public void SimpleTextQueryingSample()
@@ -178,54 +178,54 @@ The sample demonstrates that it is not necessary for the app developer to divide
 ```csharp
     Dictionary<string, string> textFiles = new Dictionary<string, string>
     {
-        {"file1", "File1.txt" },
-        {"file2", "File2.txt" },
-        {"file3", "File3.txt" },
+        {"file1", "File1.txt" },
+        {"file2", "File2.txt" },
+        {"file3", "File3.txt" },
     };
     public void TextIndexingSample2()
     {
-        AppContentIndexer indexer = GetIndexerForApp();
-        var folderPath = Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
-        // Add some text data to the index:
-        foreach (var item in textFiles)
-        {
-            string contentId = item.Key;
-            string filename = item.Value;
-            // Note that the text here can be arbitrarily large. The AppContentIndexer will take care of chunking the text
-            // in a way that works effectively with the underlying model. We do not require the app author to break the text
-            // down into small pieces.
-            string text = File.ReadAllText(Path.Combine(folderPath, filename));
-            IndexableAppContent textContent = AppManagedIndexableAppContent.CreateFromString(contentId, text);
-            indexer.AddOrUpdate(textContent);
-        }
+        AppContentIndexer indexer = GetIndexerForApp();
+        var folderPath = Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
+        // Add some text data to the index:
+        foreach (var item in textFiles)
+        {
+            string contentId = item.Key;
+            string filename = item.Value;
+            // Note that the text here can be arbitrarily large. The AppContentIndexer will take care of chunking the text
+            // in a way that works effectively with the underlying model. We do not require the app author to break the text
+            // down into small pieces.
+            string text = File.ReadAllText(Path.Combine(folderPath, filename));
+            IndexableAppContent textContent = AppManagedIndexableAppContent.CreateFromString(contentId, text);
+            indexer.AddOrUpdate(textContent);
+        }
     }
 
     public void TextIndexingSample2_RunQuery()
     {
-        AppContentIndexer indexer = GetIndexerForApp();
-        var folderPath = Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
-        // Search the index
-        AppIndexTextQuery query = indexer.CreateTextQuery("Facts about kittens.");
+        AppContentIndexer indexer = GetIndexerForApp();
+        var folderPath = Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
+        // Search the index
+        AppIndexTextQuery query = indexer.CreateTextQuery("Facts about kittens.");
         IReadOnlyList<TextQueryMatch> textMatches = query.GetNextMatches(5);
-        foreach (var match in textMatches)
-        {
-            Console.WriteLine(match.ContentId);
-            if (match is AppManagedTextQueryMatch textResult)
-            {
-                // We load the content of the file that contains the match:
-                string matchingFilename = textFiles[match.ContentId];
-                string fileContent = File.ReadAllText(Path.Combine(folderPath, matchingFilename));
+        foreach (var match in textMatches)
+        {
+            Console.WriteLine(match.ContentId);
+            if (match is AppManagedTextQueryMatch textResult)
+            {
+                // We load the content of the file that contains the match:
+                string matchingFilename = textFiles[match.ContentId];
+                string fileContent = File.ReadAllText(Path.Combine(folderPath, matchingFilename));
 
-                // Find the substring within the loaded text that contains the match:
-                string matchingString = fileContent.Substring(textResult.TextOffset, textResult.TextLength);
-                Console.WriteLine(matchingString);
-            }
-            else if (match is AppManagedOcrTextQueryMatch ocrResult)
-            {
-                // Text queries can also return OCR matches from indexed images.
-                Console.WriteLine($"OCR match: '{ocrResult.Fragment}' at {ocrResult.Subregion}");
-            }
-        }
+                // Find the substring within the loaded text that contains the match:
+                string matchingString = fileContent.Substring(textResult.TextOffset, textResult.TextLength);
+                Console.WriteLine(matchingString);
+            }
+            else if (match is AppManagedOcrTextQueryMatch ocrResult)
+            {
+                // Text queries can also return OCR matches from indexed images.
+                Console.WriteLine($"OCR match: '{ocrResult.Fragment}' at {ocrResult.Subregion}");
+            }
+        }
     }
 ```
 
@@ -239,48 +239,48 @@ This sample demonstrates how to index image data as `SoftwareBitmaps` and then s
     // We load the image data from a set of known files and send that image data to the indexer.
     // The image data does not need to come from files on disk, it can come from anywhere.
     Dictionary<string, string> imageFilesToIndex = new Dictionary<string, string>
-        {
-            {"item1", "Cat.jpg" },
-            {"item2", "Dog.jpg" },
-            {"item3", "Fish.jpg" },
-            {"item4", "Broccoli.jpg" },
-            {"item5", "Computer.jpg" },
-            {"item6", "Music.jpg" },
-        };
+        {
+            {"item1", "Cat.jpg" },
+            {"item2", "Dog.jpg" },
+            {"item3", "Fish.jpg" },
+            {"item4", "Broccoli.jpg" },
+            {"item5", "Computer.jpg" },
+            {"item6", "Music.jpg" },
+        };
     public void SimpleImageIndexingSample()
     {
-        AppContentIndexer indexer = GetIndexerForApp();
+        AppContentIndexer indexer = GetIndexerForApp();
 
-        // Add some image data to the index.
-        foreach (var item in imageFilesToIndex)
-        {
-            var file = item.Value;
-            var softwareBitmap = Helpers.GetSoftwareBitmapFromFile(file);
-            IndexableAppContent imageContent = AppManagedIndexableAppContent.CreateFromBitmap(item.Key, softwareBitmap);
-            indexer.AddOrUpdate(imageContent);
-        }
+        // Add some image data to the index.
+        foreach (var item in imageFilesToIndex)
+        {
+            var file = item.Value;
+            var softwareBitmap = Helpers.GetSoftwareBitmapFromFile(file);
+            IndexableAppContent imageContent = AppManagedIndexableAppContent.CreateFromBitmap(item.Key, softwareBitmap);
+            indexer.AddOrUpdate(imageContent);
+        }
     }
     public void SimpleImageIndexingSample_RunQuery()
     {
-        AppContentIndexer indexer = GetIndexerForApp();
-        // We query the index for some data to match our text query.
-        AppIndexImageQuery query = indexer.CreateImageQuery("cute pictures of kittens");
+        AppContentIndexer indexer = GetIndexerForApp();
+        // We query the index for some data to match our text query.
+        AppIndexImageQuery query = indexer.CreateImageQuery("cute pictures of kittens");
         IReadOnlyList<ImageQueryMatch> imageMatches = query.GetNextMatches(5);
-        // One of the images that we indexed was a photo of a cat. We expect this to be the first match to match the query.
-        foreach (var match in imageMatches)
-        {
-            Console.WriteLine(match.ContentId);
-            if (match.ContentKind == QueryMatchContentKind.AppManagedImage)
-            {
-                AppManagedImageQueryMatch imageResult = (AppManagedImageQueryMatch)match;
-                var matchingFileName = imageFilesToIndex[match.ContentId];
+        // One of the images that we indexed was a photo of a cat. We expect this to be the first match to match the query.
+        foreach (var match in imageMatches)
+        {
+            Console.WriteLine(match.ContentId);
+            if (match.ContentKind == QueryMatchContentKind.AppManagedImage)
+            {
+                AppManagedImageQueryMatch imageResult = (AppManagedImageQueryMatch)match;
+                var matchingFileName = imageFilesToIndex[match.ContentId];
 
-                // It might be that the match is at a particular region in the image. The result may include
-                // a region of interest that was the source of the match.
+                // It might be that the match is at a particular region in the image. The result may include
+                // a region of interest that was the source of the match.
 
-                Console.WriteLine($"Matching file: '{matchingFileName}' at location {imageResult.RegionOfInterest}");
-            }
-        }
+                Console.WriteLine($"Matching file: '{matchingFileName}' at location {imageResult.RegionOfInterest}");
+            }
+        }
     }
 ```
 The CreateFromBitmap path accepts a SoftwareBitmap (from Windows.Graphics.Imaging). The sample's helper GetSoftwareBitmapFromFile uses BitmapDecoder.CreateAsync to decode the file, which supports all Windows Imaging Component (WIC) codecs:
@@ -391,45 +391,45 @@ To enable RAG scenarios with the **AppContentIndexer** API, you can follow this 
 ```csharp
     public void SimpleRAGScenario()
     {
-        AppContentIndexer indexer = GetIndexerForApp();
-        // These are some text files that had previously been added to the index.
-        // The key is the contentId of the item.
-        Dictionary<string, string> data = new Dictionary<string, string>
-        {
-            {"file1", "File1.txt" },
-            {"file2", "File2.txt" },
-            {"file3", "File3.txt" },
-        };
-        string userPrompt = Helpers.GetUserPrompt();
-        // We execute a query against the index using the user's prompt string as the query text.
-        AppIndexTextQuery query = indexer.CreateTextQuery(userPrompt);
+        AppContentIndexer indexer = GetIndexerForApp();
+        // These are some text files that had previously been added to the index.
+        // The key is the contentId of the item.
+        Dictionary<string, string> data = new Dictionary<string, string>
+        {
+            {"file1", "File1.txt" },
+            {"file2", "File2.txt" },
+            {"file3", "File3.txt" },
+        };
+        string userPrompt = Helpers.GetUserPrompt();
+        // We execute a query against the index using the user's prompt string as the query text.
+        AppIndexTextQuery query = indexer.CreateTextQuery(userPrompt);
         IReadOnlyList<TextQueryMatch> textMatches = query.GetNextMatches(5);
-        StringBuilder promptStringBuilder = new StringBuilder();
-        promptStringBuilder.AppendLine("Please refer to the following pieces of information when responding to the user's prompt:");
-        // For each of the matches found, we include the relevant snippets of the text files in the augmented query that we send to the language model
-        foreach (var match in textMatches)
-        {
-            if (match is AppManagedTextQueryMatch textResult)
-            {
-                // We load the content of the file that contains the match:
-                string matchingFilename = data[match.ContentId];
-                string fileContent = File.ReadAllText(matchingFilename);
-                // Find the substring within the loaded text that contains the match:
-                string matchingString = fileContent.Substring(textResult.TextOffset, textResult.TextLength);
-                promptStringBuilder.AppendLine(matchingString);
-                promptStringBuilder.AppendLine();
-            }
-            else if (match is AppManagedOcrTextQueryMatch ocrResult)
-            {
-                // OCR matches from indexed images can also be included in the RAG context.
-                promptStringBuilder.AppendLine(ocrResult.Fragment);
-                promptStringBuilder.AppendLine();
-            }
-        }
-        promptStringBuilder.AppendLine("Please provide a response to the following user prompt:");
-        promptStringBuilder.AppendLine(userPrompt);
-        var response = Helpers.GetResponseFromChatAgent(promptStringBuilder.ToString());
-        Console.WriteLine(response);
+        StringBuilder promptStringBuilder = new StringBuilder();
+        promptStringBuilder.AppendLine("Please refer to the following pieces of information when responding to the user's prompt:");
+        // For each of the matches found, we include the relevant snippets of the text files in the augmented query that we send to the language model
+        foreach (var match in textMatches)
+        {
+            if (match is AppManagedTextQueryMatch textResult)
+            {
+                // We load the content of the file that contains the match:
+                string matchingFilename = data[match.ContentId];
+                string fileContent = File.ReadAllText(matchingFilename);
+                // Find the substring within the loaded text that contains the match:
+                string matchingString = fileContent.Substring(textResult.TextOffset, textResult.TextLength);
+                promptStringBuilder.AppendLine(matchingString);
+                promptStringBuilder.AppendLine();
+            }
+            else if (match is AppManagedOcrTextQueryMatch ocrResult)
+            {
+                // OCR matches from indexed images can also be included in the RAG context.
+                promptStringBuilder.AppendLine(ocrResult.Fragment);
+                promptStringBuilder.AppendLine();
+            }
+        }
+        promptStringBuilder.AppendLine("Please provide a response to the following user prompt:");
+        promptStringBuilder.AppendLine(userPrompt);
+        var response = Helpers.GetResponseFromChatAgent(promptStringBuilder.ToString());
+        Console.WriteLine(response);
     }
 ```
 
@@ -577,10 +577,10 @@ An **AppContentIndexer** instance is not associated with a particular thread; it
 ```csharp
     public void IndexerDisposeSample()
     {
-        var indexer = AppContentIndexer.GetOrCreateIndex("myindex").Indexer;
-        // use indexer
-        indexer.Dispose();
-        // after this point, it would be an error to try to use indexer since it is now Closed.
+        var indexer = AppContentIndexer.GetOrCreateIndex("myindex").Indexer;
+        // use indexer
+        indexer.Dispose();
+        // after this point, it would be an error to try to use indexer since it is now Closed.
     }
 ```
 
@@ -589,9 +589,9 @@ In C# code, the `IClosable` interface is projected as `IDisposable`. C# code can
 ```csharp
     public void IndexerUsingSample()
     {
-        using var indexer = AppContentIndexer.GetOrCreateIndex("myindex").Indexer;
-        // use indexer
-        //indexer.Dispose() is automatically called
+        using var indexer = AppContentIndexer.GetOrCreateIndex("myindex").Indexer;
+        // use indexer
+        //indexer.Dispose() is automatically called
     }
 ```
 
